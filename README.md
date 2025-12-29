@@ -113,3 +113,4 @@ Create `.vault_pass.txt` in repo root (gitignored) for automated runs:
 ## Credits
 
 - Installation helper: [VoodooFan's script](https://github.com/VoodooFan/nebulous)
+- Reboot utility: [Switchback's N:FC Automatic Server Reboot Utility](https://github.com/switchback028/N-FE-ASRU)

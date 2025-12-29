@@ -1,0 +1,2 @@
+# steam ALL=NOPASSWD: /usr/bin/systemctl restart nds.service ,  /usr/bin/systemctl start nds.service ,  /usr/bin/systemctl stop nds.service 
+steam ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart nds.service ,  /usr/bin/systemctl start nds.service ,  /usr/bin/systemctl stop nds.service

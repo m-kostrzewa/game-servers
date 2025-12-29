@@ -1,0 +1,15 @@
+---
+# Ansible Vault - Encrypted secrets
+# This file should be encrypted with: ansible-vault encrypt inventory/group_vars/nds_servers/vault.yml
+# Edit with: ansible-vault edit inventory/group_vars/nds_servers/vault.yml
+
+vault_server_admin_password: "your_nds_server_password"
+vault_admin_steam_id: "your_steam_id"
+
+# Grafana Cloud - Promtail (Loki) endpoint
+vault_promtail_url: "https://YOUR_USER_ID:YOUR_GRAFANA_TOKEN@logs-prod-025.grafana.net/api/prom/push"
+
+# Grafana Cloud - Prometheus endpoint
+vault_prometheus_url: "https://prometheus-prod-39-prod-eu-north-0.grafana.net/api/prom/push"
+vault_prometheus_username: "YOUR_PROMETHEUS_USERNAME"
+vault_prometheus_password: "YOUR_PROMETHEUS_PASSWORD"

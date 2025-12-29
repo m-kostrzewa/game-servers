@@ -1,0 +1,103 @@
+---
+# Monitoring Stack Role - Prometheus, Promtail, Node Exporter
+
+- name: Create Prometheus config directory
+  file:
+    path: "{{ prometheus_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Create Promtail config directory
+  file:
+    path: "{{ promtail_config_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Create Promtail positions directory
+  file:
+    path: "{{ promtail_config_path }}/tmp"
+    state: directory
+    mode: '0755'
+
+- name: Deploy Prometheus configuration
+  template:
+    src: prometheus.yml.j2
+    dest: "{{ prometheus_config_file }}"
+    mode: '0644'
+  notify: restart prometheus
+
+- name: Deploy Promtail configuration
+  template:
+    src: config.yaml.j2
+    dest: "{{ promtail_config_file }}"
+    mode: '0644'
+  notify: restart promtail
+
+- name: Stop and remove old Node Exporter container
+  docker_container:
+    name: nodeexporter
+    state: absent
+  ignore_errors: yes
+
+- name: Deploy Node Exporter container
+  docker_container:
+    name: nodeexporter
+    image: "{{ docker_images.nodeexporter }}"
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    pid_mode: host
+    volumes:
+      - "/:/host:ro,rslave"
+    command: "--path.rootfs=/host"
+  register: nodeexporter_result
+
+- name: Stop and remove old Prometheus container
+  docker_container:
+    name: prometheus
+    state: absent
+  ignore_errors: yes
+
+- name: Deploy Prometheus container
+  docker_container:
+    name: prometheus
+    image: "{{ docker_images.prometheus }}"
+    state: started
+    restart_policy: unless-stopped
+    network_mode: host
+    volumes:
+      - "{{ prometheus_config_path }}:/etc/prometheus"
+  register: prometheus_result
+
+- name: Stop and remove old Promtail container
+  docker_container:
+    name: promtail
+    state: absent
+  ignore_errors: yes
+
+- name: Deploy Promtail container
+  docker_container:
+    name: promtail
+    image: "{{ docker_images.promtail }}"
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - "{{ promtail_config_path }}/tmp:/tmp"
+      - "{{ promtail_config_path }}:/etc/promtail"
+      - "/var/log:/var/log"
+      - "{{ nds_service_path }}:{{ nds_service_path }}"
+    command: "-config.file=/etc/promtail/config.yaml -client.external-labels=origin={{ inventory_hostname }}"
+  register: promtail_result
+
+- name: Display monitoring deployment summary
+  debug:
+    msg: |
+      ✓ Monitoring stack deployed:
+        - Prometheus: {{ prometheus_result.changed | ternary('deployed', 'already running') }}
+        - Promtail: {{ promtail_result.changed | ternary('deployed', 'already running') }}
+        - Node Exporter: {{ nodeexporter_result.changed | ternary('deployed', 'already running') }}
+      
+      Configuration:
+        - Prometheus config: {{ prometheus_config_file }}
+        - Promtail config: {{ promtail_config_file }}
+        - Log sources: system, game, admin logs

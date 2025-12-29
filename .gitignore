@@ -1,0 +1,5 @@
+secrets.txt
+ansible_deployment.log
+.venv/
+.vscode/
+.vault_pass.txt

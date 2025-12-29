@@ -1,0 +1,25 @@
+---
+- name: Deploy Nebulous Fleet Command Infrastructure
+  hosts: nds_servers
+  become: yes
+  gather_facts: yes
+  
+  roles:
+    - nds_server
+    - system_config
+    - monitoring
+
+  post_tasks:
+    - name: Display deployment summary
+      debug:
+        msg: |
+          ✓ Deployment complete for {{ inventory_hostname }}
+          Server Name: {{ server_name }}
+          Game Port: {{ game_port }}
+          Systemd Service: {{ nds_service_name }}
+          Config Path: {{ nds_config_path }}
+          
+          Next steps:
+          1. Verify server is running: systemctl status nds
+          2. Check logs: tail -f /srv/steam/nds.log
+          3. Join the game server to verify it's responding

@@ -1,0 +1,22 @@
+---
+# Handlers - Triggered tasks
+
+- name: restart nds service
+  systemd:
+    name: "{{ nds_service_name }}"
+    state: restarted
+    enabled: yes
+
+- name: systemctl daemon-reload
+  systemd:
+    daemon_reload: yes
+
+- name: restart prometheus
+  docker_container:
+    name: prometheus
+    restart: yes
+
+- name: restart promtail
+  docker_container:
+    name: promtail
+    restart: yes

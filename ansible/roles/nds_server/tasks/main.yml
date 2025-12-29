@@ -1,0 +1,56 @@
+---
+# NDS Server Configuration Role
+
+- name: Create NDS config directory
+  file:
+    path: "{{ nds_service_path }}"
+    state: directory
+    owner: "{{ nds_user }}"
+    mode: '0755'
+
+- name: Deploy NDS server configuration
+  template:
+    src: nds.conf.j2
+    dest: "{{ nds_config_path }}"
+    owner: "{{ nds_user }}"
+    group: "{{ nds_user }}"
+    mode: '0644'
+  notify: restart nds service
+
+- name: Copy update script
+  copy:
+    src: "{{ playbook_dir }}/../checkUpdate.sh"
+    dest: "{{ nds_service_path }}/checkUpdate.sh"
+    owner: "{{ nds_user }}"
+    group: "{{ nds_user }}"
+    mode: '0755'
+
+- name: Copy nightly restart script
+  copy:
+    src: "{{ playbook_dir }}/../nightlyRestart.sh"
+    dest: "{{ nds_service_path }}/nightlyRestart.sh"
+    owner: "{{ nds_user }}"
+    group: "{{ nds_user }}"
+    mode: '0755'
+
+- name: Create systemd service override directory
+  file:
+    path: "/usr/local/lib/systemd/system/nds.service.d"
+    state: directory
+    mode: '0755'
+
+- name: Deploy systemd service override (tryUpdate.conf)
+  copy:
+    src: "{{ playbook_dir }}/../tryUpdate.conf"
+    dest: "/usr/local/lib/systemd/system/nds.service.d/tryUpdate.conf"
+    mode: '0644'
+  notify: systemctl daemon-reload
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+  notify: restart nds service
+
+- name: Display NDS service status
+  debug:
+    msg: "NDS service configuration deployed: {{ nds_config_path }}"

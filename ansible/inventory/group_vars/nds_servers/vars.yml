@@ -1,0 +1,31 @@
+---
+# Public variables for NDS servers
+nds_service_name: nds
+nds_user: steam
+nds_service_path: /srv/steam
+nds_config_path: /srv/steam/nds.conf
+
+# Docker images
+docker_images:
+  nodeexporter: quay.io/prometheus/node-exporter:latest
+  prometheus: prom/prometheus
+  promtail: grafana/promtail:main
+
+# Prometheus settings
+prometheus_scrape_interval: 15s
+prometheus_config_path: /root/prometheus
+prometheus_config_file: /root/prometheus/prometheus.yml
+
+# Promtail settings
+promtail_config_path: /root/promtail
+promtail_config_file: /root/promtail/config.yaml
+promtail_positions_path: /root/promtail/tmp/positions.yaml
+
+# Cron schedules
+update_check_schedule: "*/30 * * * *"  # Every 30 minutes
+nightly_restart_schedule: "5 8 * * *"  # 08:05 UTC daily
+
+# Log paths
+system_log_path: /var/log/*.log
+game_log_path: /srv/steam/nds.log
+admin_log_path: /srv/steam/log.txt

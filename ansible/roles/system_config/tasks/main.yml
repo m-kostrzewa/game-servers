@@ -1,0 +1,50 @@
+---
+# System Configuration Role - Cron, Sudoers, Permissions
+
+- name: Deploy crontab configuration
+  template:
+    src: crontab.j2
+    dest: /etc/crontab
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy sudoers configuration for NDS restart
+  copy:
+    src: "{{ playbook_dir }}/../nds_restart_by_steam"
+    dest: /etc/sudoers.d/nds_restart_by_steam
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'
+  register: sudoers_validation
+
+- name: Verify sudoers deployment
+  debug:
+    msg: "Sudoers file validated successfully"
+  when: sudoers_validation is succeeded
+
+- name: Create log directory for admin logs
+  file:
+    path: "{{ nds_service_path }}"
+    state: directory
+    owner: "{{ nds_user }}"
+    group: "{{ nds_user }}"
+    mode: '0755'
+
+- name: Initialize admin log file
+  file:
+    path: "{{ admin_log_path }}"
+    state: touch
+    owner: "{{ nds_user }}"
+    group: "{{ nds_user }}"
+    mode: '0644'
+
+- name: Display system configuration summary
+  debug:
+    msg: |
+      ✓ Cron jobs configured:
+        - Update check: {{ update_check_schedule }}
+        - Nightly restart: {{ nightly_restart_schedule }}
+      ✓ Sudoers configured for steam user
+      ✓ Log directories initialized

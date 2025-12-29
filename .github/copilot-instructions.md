@@ -16,7 +16,7 @@ This is a **Nebulous Fleet Command (N:FC) dedicated server management system** r
 | **Inventory** | Hardcoded IPs in `run.ps1` | `hosts.yml` (YAML, easily extended) |
 | **Config** | Manual placeholder substitution | Jinja2 templates (dynamic, no errors) |
 | **Modularity** | Single script | Roles (nds_server, system_config, monitoring) |
-| **Multi-server** | Edit script and restart | `--limit nds2` or `--limit all` (declarative) |
+| **Multi-server** | Edit script and restart | `deploy-one alpha|bravo` or `deploy-all` (declarative) |
 | **Idempotency** | Scripts re-run unsafely | Ansible ensures desired state (safe re-runs) |
 
 ### Architecture at a Glance
@@ -44,7 +44,7 @@ Grafana Cloud (free-tier with dashboards)
 
 ### Initial Deployment: `run.ps1`
 
-The **master deployment script** (52 lines) orchestrates the entire infrastructure. **Important**: This deploys **2 game servers** (neb2 and neb3) that require **manual in-game verification** to confirm successful deployment.
+The **master deployment script** (52 lines) orchestrates the entire infrastructure. **Important**: This deploys **2 game servers** (alpha and bravo) that require **manual in-game verification** to confirm successful deployment.
 
 1. **Copies config files** to both servers:
    - `nds-neb2.conf` / `nds-neb3.conf` - N:FC server configurations (XML format, 154 lines)
@@ -164,7 +164,7 @@ Three separate label streams enable filtering:
 
 ## Common Tasks for AI Agents
 
-1. **Test deployment on neb3 only**: Comment out neb2 lines in `run.ps1` (lines 8, 10) to deploy to single server during testing
+1. **Test deployment on bravo only**: Comment out alpha lines in `run.ps1` (lines 8, 10) to deploy to single server during testing
 2. **Add a new server**: Update `run.ps1` array and create `nds-neb4.conf`
 3. **Change restart schedule**: Edit crontab entries (minute/hour fields)
 4. **Add log source**: Update `config.yaml` scrape_configs section
@@ -243,12 +243,12 @@ $ips = @("5.75.190.44", "37.27.181.203")
 ```yaml
 nds2:
   ansible_host: 5.75.190.44
-  server_name: "[EU] Bizarre Adventure - Server 1"
+  server_name: "[EU] Bizarre Adventure #1"
   game_port: 7777
   nds_conf_file: nds-neb2.conf
 nds3:
   ansible_host: 37.27.181.203
-  server_name: "[EU] Bizarre Adventure - Server 2"
+  server_name: "[EU] Bizarre Adventure #2"
   game_port: 7777
   nds_conf_file: nds-neb3.conf
 ```
@@ -405,15 +405,16 @@ PowerShell script that bridges Windows command line to Ansible running in WSL.
 # Edit encrypted vault (launches editor in WSL)
 .\nebctl.ps1 edit-vault
 
+
 # Deploy to all servers
 .\nebctl.ps1 deploy-all
 
-# Deploy to test server only (safe for testing)
+# Deploy to test server only (maps to bravo)
 .\nebctl.ps1 deploy-test
 
-# Deploy to single server
-.\nebctl.ps1 deploy-nds2
-.\nebctl.ps1 deploy-nds3
+# Deploy to single server (pass alpha/bravo)
+.\nebctl.ps1 deploy-one alpha
+.\nebctl.ps1 deploy-one bravo
 
 # Dry-run (preview changes without applying)
 .\nebctl.ps1 deploy-all -DryRun
@@ -435,7 +436,7 @@ PowerShell script that bridges Windows command line to Ansible running in WSL.
    ```yaml
    nds4:
      ansible_host: x.x.x.x
-     server_name: "[EU] Bizarre Adventure - Server 3"
+     server_name: "[EU] Bizarre Adventure #3"
      game_port: 7777
      nds_conf_file: nds-neb4.conf
      server_id: neb4

@@ -19,7 +19,7 @@
 
 - name: Copy update script
   copy:
-    src: "{{ playbook_dir }}/../checkUpdate.sh"
+    src: checkUpdate.sh
     dest: "{{ nds_service_path }}/checkUpdate.sh"
     owner: "{{ nds_user }}"
     group: "{{ nds_user }}"
@@ -27,7 +27,7 @@
 
 - name: Copy nightly restart script
   copy:
-    src: "{{ playbook_dir }}/../nightlyRestart.sh"
+    src: nightlyRestart.sh
     dest: "{{ nds_service_path }}/nightlyRestart.sh"
     owner: "{{ nds_user }}"
     group: "{{ nds_user }}"
@@ -38,13 +38,6 @@
     path: "/usr/local/lib/systemd/system/nds.service.d"
     state: directory
     mode: '0755'
-
-- name: Deploy systemd service override (tryUpdate.conf)
-  copy:
-    src: "{{ playbook_dir }}/../tryUpdate.conf"
-    dest: "/usr/local/lib/systemd/system/nds.service.d/tryUpdate.conf"
-    mode: '0644'
-  notify: systemctl daemon-reload
 
 - name: Reload systemd daemon
   systemd:

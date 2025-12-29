@@ -6,7 +6,7 @@
 global:
   scrape_interval: {{ prometheus_scrape_interval }}
   external_labels:
-    origin: {{ inventory_hostname }}
+    origin: {{ server_id }}
 
 remote_write:
   - url: {{ vault_prometheus_url }}

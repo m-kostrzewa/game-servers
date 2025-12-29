@@ -11,7 +11,7 @@
 
 - name: Deploy sudoers configuration for NDS restart
   copy:
-    src: "{{ playbook_dir }}/../nds_restart_by_steam"
+    src: nds_restart_by_steam
     dest: /etc/sudoers.d/nds_restart_by_steam
     owner: root
     group: root
@@ -40,6 +40,22 @@
     group: "{{ nds_user }}"
     mode: '0644'
 
+- name: Create systemd service override directory
+  file:
+    path: "/usr/local/lib/systemd/system/nds.service.d"
+    state: directory
+    mode: '0755'
+
+- name: Deploy systemd service override (tryUpdate.conf)
+  copy:
+    src: tryUpdate.conf
+    dest: "/usr/local/lib/systemd/system/nds.service.d/tryUpdate.conf"
+    mode: '0644'
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
 - name: Display system configuration summary
   debug:
     msg: |
@@ -47,4 +63,5 @@
         - Update check: {{ update_check_schedule }}
         - Nightly restart: {{ nightly_restart_schedule }}
       ✓ Sudoers configured for steam user
+      ✓ Systemd override deployed
       ✓ Log directories initialized

@@ -86,7 +86,7 @@
       - "{{ promtail_config_path }}:/etc/promtail"
       - "/var/log:/var/log"
       - "{{ nds_service_path }}:{{ nds_service_path }}"
-    command: "-config.file=/etc/promtail/config.yaml -client.external-labels=origin={{ inventory_hostname }}"
+    command: "-config.file=/etc/promtail/config.yaml -client.external-labels=origin={{ server_id }}"
   register: promtail_result
 
 - name: Display monitoring deployment summary

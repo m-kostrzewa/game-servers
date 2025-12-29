@@ -20,7 +20,7 @@ scrape_configs:
           - localhost
         labels:
           job: varlogs
-          origin: {{ inventory_hostname }}
+          origin: {{ server_id }}
           __path__: {{ system_log_path }}
 
   - job_name: nebulous
@@ -29,7 +29,7 @@ scrape_configs:
           - localhost
         labels:
           job: nebulous
-          origin: {{ inventory_hostname }}
+          origin: {{ server_id }}
           __path__: {{ game_log_path }}
 
   - job_name: adminLog
@@ -38,5 +38,5 @@ scrape_configs:
           - localhost
         labels:
           job: adminLog
-          origin: {{ inventory_hostname }}
+          origin: {{ server_id }}
           __path__: {{ admin_log_path }}

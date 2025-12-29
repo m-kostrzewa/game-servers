@@ -2,7 +2,7 @@
 
 Ansible-based deployment system for multi-server N:FC game server orchestration with automated updates, restarts, monitoring (Prometheus/Grafana), and log aggregation (Promtail/Loki).
 
-**Status**: Operational | **Servers**: 2 (nds2: EU-1, nds3: EU-2) | **Monitoring**: Grafana Cloud
+**Status**: Operational | **Servers**: 2 (alpha: EU-1, bravo: EU-2) | **Monitoring**: Grafana Cloud
 
 ## Quick Start
 
@@ -36,7 +36,7 @@ cp inventory/group_vars/nds_servers/vault.yml.template inventory/group_vars/nds_
 .\nebctl.ps1 deploy-all
 
 # Single server (safe for updates)
-.\nebctl.ps1 deploy-nds2
+.\nebctl.ps1 deploy-one alpha
 
 # Dry-run (preview only, no changes)
 .\nebctl.ps1 deploy-all -DryRun
@@ -101,7 +101,7 @@ Create `.vault_pass.txt` in repo root (gitignored) for automated runs:
 | **Edit vault secrets** | `.\nebctl.ps1 edit-vault` |
 | **View encrypted vault** | `.\nebctl.ps1 view-vault` |
 | **Deploy all** | `.\nebctl.ps1 deploy-all` |
-| **Deploy single** | `.\nebctl.ps1 deploy-nds3` |
+| **Deploy single** | `.\nebctl.ps1 deploy-one bravo` |
 | **Dry-run (preview)** | `.\nebctl.ps1 deploy-all -DryRun` |
 
 ## Monitoring

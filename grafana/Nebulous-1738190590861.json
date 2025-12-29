@@ -27,7 +27,7 @@
           "uid": "grafanacloud-logs"
         },
         "enable": true,
-        "expr": "{filename=\"/srv/steam/nds.log\",origin=\"$node\"} |= `Changing server game state to Finished`\r\n\r\n",
+        "expr": "{filename=\"/srv/steam/nds.log\",origin=~\"$node\"} |= `Changing server game state to Finished`\r\n\r\n",
         "hide": false,
         "iconColor": "red",
         "instant": false,
@@ -39,7 +39,7 @@
           "uid": "grafanacloud-logs"
         },
         "enable": true,
-        "expr": "{filename=\"/srv/steam/nds.log\",origin=\"$node\"} |= `Changing server game state to LoadingMap`",
+        "expr": "{filename=\"/srv/steam/nds.log\",origin=~\"$node\"} |= `Changing server game state to LoadingMap`",
         "hide": false,
         "iconColor": "blue",
         "instant": false,
@@ -51,7 +51,7 @@
           "uid": "grafanacloud-logs"
         },
         "enable": true,
-        "expr": "{filename=\"/srv/steam/log.txt\",origin=\"$node\"} |= `new update available`",
+        "expr": "{filename=\"/srv/steam/log.txt\",origin=~\"$node\"} |= `new update available`",
         "hide": false,
         "iconColor": "yellow",
         "instant": false,
@@ -63,7 +63,7 @@
           "uid": "grafanacloud-logs"
         },
         "enable": true,
-        "expr": "{filename=\"/srv/steam/log.txt\",origin=\"$node\"} |= `restart`",
+        "expr": "{filename=\"/srv/steam/log.txt\",origin=~\"$node\"} |= `restart`",
         "hide": false,
         "iconColor": "green",
         "instant": false,
@@ -74,9 +74,22 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": 16,
   "links": [],
   "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 6,
+      "panels": [],
+      "repeat": "node",
+      "title": "Stats",
+      "type": "row"
+    },
     {
       "datasource": {
         "type": "loki",
@@ -98,8 +111,8 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
+            "fillOpacity": 35,
+            "gradientMode": "opacity",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -116,6 +129,7 @@
               "type": "linear"
             },
             "showPoints": "always",
+            "showValues": false,
             "spanNulls": true,
             "stacking": {
               "group": "A",
@@ -132,10 +146,10 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
-                "color": "green",
+                "color": "#73bf693b",
                 "value": 8
               }
             ]
@@ -161,7 +175,107 @@
                 "value": {
                   "legend": false,
                   "tooltip": false,
-                  "viz": true
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "B"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.barAlignment",
+                "value": -1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "C"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#fade2ab3",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "custom.barAlignment",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "D"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5795f285",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byFrameRefID",
+              "options": "E"
+            },
+            "properties": [
+              {
+                "id": "custom.drawStyle",
+                "value": "bars"
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#b877d987",
+                  "mode": "fixed"
                 }
               }
             ]
@@ -172,7 +286,7 @@
         "h": 7,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 1
       },
       "id": 1,
       "options": {
@@ -186,23 +300,73 @@
           "hideZeros": false,
           "hoverProximity": 1,
           "maxWidth": -1,
-          "mode": "single",
+          "mode": "multi",
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0-81732",
+      "pluginVersion": "12.4.0-20160616057",
       "targets": [
         {
           "datasource": {
             "type": "loki",
             "uid": "grafanacloud-logs"
           },
+          "direction": "backward",
           "editorMode": "code",
-          "expr": "max_over_time({filename=\"/srv/steam/nds.log\", origin=\"$node\"} |= `Total number` | pattern `<_> Total number of connected players now: <numPlayers>` | unwrap numPlayers [1m])",
+          "expr": "max_over_time({filename=\"/srv/steam/nds.log\", origin=~\"$node\"} |= `Total number` | pattern `<_> Total number of connected players now: <numPlayers>` | unwrap numPlayers [1m])",
           "legendFormat": "numPlayers",
           "queryType": "range",
           "refId": "A",
           "step": ""
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "count_over_time({filename=\"/srv/steam/log.txt\",origin=~\"$node\"} |= `new update available` [$__auto])",
+          "legendFormat": "New update available",
+          "queryType": "range",
+          "refId": "B",
+          "step": ""
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "count_over_time({filename=\"/srv/steam/log.txt\",origin=~\"$node\"} |= `restart` [$__auto])",
+          "legendFormat": "Restart",
+          "queryType": "range",
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "count_over_time({filename=\"/srv/steam/nds.log\",origin=~\"$node\"} |= `Changing server game state to LoadingMap` [$__auto])",
+          "legendFormat": "Match Start",
+          "queryType": "range",
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "grafanacloud-logs"
+          },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "count_over_time({filename=\"/srv/steam/nds.log\",origin=~\"$node\"} |= `Changing server game state to Finished` [$__auto])\r\n",
+          "legendFormat": "Match Finished",
+          "queryType": "range",
+          "refId": "E"
         }
       ],
       "title": "Num connected players",
@@ -243,6 +407,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -260,7 +425,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -641,10 +806,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 6,
+        "w": 6,
         "x": 0,
-        "y": 7
+        "y": 8
       },
       "id": 4,
       "options": {
@@ -652,7 +817,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true,
+          "showLegend": false,
           "width": 350
         },
         "tooltip": {
@@ -661,7 +826,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0-81732",
+      "pluginVersion": "12.4.0-20160616057",
       "targets": [
         {
           "datasource": {
@@ -669,9 +834,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "node_memory_MemTotal_bytes{origin=\"$node\",job=\"$job\"}",
+          "expr": "node_memory_MemTotal_bytes{origin=~\"$node\",job=\"$job\"}",
           "format": "time_series",
-          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "RAM Total",
           "range": true,
@@ -684,9 +848,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "node_memory_MemTotal_bytes{origin=\"$node\",job=\"$job\"} - node_memory_MemFree_bytes{origin=\"$node\",job=\"$job\"} - (node_memory_Cached_bytes{origin=\"$node\",job=\"$job\"} + node_memory_Buffers_bytes{origin=\"$node\",job=\"$job\"} + node_memory_SReclaimable_bytes{origin=\"$node\",job=\"$job\"})",
+          "expr": "node_memory_MemTotal_bytes{origin=~\"$node\",job=\"$job\"} - node_memory_MemFree_bytes{origin=~\"$node\",job=\"$job\"} - (node_memory_Cached_bytes{origin=~\"$node\",job=\"$job\"} + node_memory_Buffers_bytes{origin=~\"$node\",job=\"$job\"} + node_memory_SReclaimable_bytes{origin=~\"$node\",job=\"$job\"})",
           "format": "time_series",
-          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "RAM Used",
           "range": true,
@@ -699,7 +862,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "node_memory_Cached_bytes{origin=\"$node\",job=\"$job\"} + node_memory_Buffers_bytes{origin=\"$node\",job=\"$job\"} + node_memory_SReclaimable_bytes{origin=\"$node\",job=\"$job\"}",
+          "expr": "node_memory_Cached_bytes{origin=~\"$node\",job=\"$job\"} + node_memory_Buffers_bytes{origin=~\"$node\",job=\"$job\"} + node_memory_SReclaimable_bytes{origin=~\"$node\",job=\"$job\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "RAM Cache + Buffer",
@@ -713,7 +876,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "node_memory_MemFree_bytes{origin=\"$node\",job=\"$job\"}",
+          "expr": "node_memory_MemFree_bytes{origin=~\"$node\",job=\"$job\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "RAM Free",
@@ -727,7 +890,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "(node_memory_SwapTotal_bytes{origin=\"$node\",job=\"$job\"} - node_memory_SwapFree_bytes{origin=\"$node\",job=\"$job\"})",
+          "expr": "(node_memory_SwapTotal_bytes{origin=~\"$node\",job=\"$job\"} - node_memory_SwapFree_bytes{origin=~\"$node\",job=\"$job\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "SWAP Used",
@@ -737,111 +900,6 @@
         }
       ],
       "title": "Memory Basic",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "description": "Disk space used of all filesystems mounted",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 40,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "max": 100,
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 7
-      },
-      "id": 3,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.5.0-81732",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${datasource}"
-          },
-          "editorMode": "code",
-          "expr": "100 - ((node_filesystem_avail_bytes{origin=\"$node\",job=\"$job\",device!~'rootfs'} * 100) / node_filesystem_size_bytes{origin=\"$node\",job=\"$job\",device!~'rootfs'})",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{mountpoint}}",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        }
-      ],
-      "title": "Disk Space Used Basic",
       "type": "timeseries"
     },
     {
@@ -879,6 +937,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -896,7 +955,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -1015,10 +1074,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 15
+        "h": 6,
+        "w": 6,
+        "x": 6,
+        "y": 8
       },
       "id": 2,
       "options": {
@@ -1026,7 +1085,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true,
+          "showLegend": false,
           "width": 250
         },
         "tooltip": {
@@ -1035,7 +1094,7 @@
           "sort": "desc"
         }
       },
-      "pluginVersion": "11.5.0-81732",
+      "pluginVersion": "12.4.0-20160616057",
       "targets": [
         {
           "datasource": {
@@ -1044,9 +1103,8 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\", mode=\"system\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\", mode=\"system\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
-          "hide": false,
           "instant": false,
           "intervalFactor": 1,
           "legendFormat": "Busy System",
@@ -1060,9 +1118,8 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\", mode=\"user\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\", mode=\"user\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
-          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "Busy User",
           "range": true,
@@ -1075,7 +1132,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\", mode=\"iowait\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\", mode=\"iowait\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Busy Iowait",
@@ -1089,7 +1146,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\", mode=~\".*irq\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\", mode=~\".*irq\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Busy IRQs",
@@ -1103,7 +1160,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\",  mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq'}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\",  mode!='idle',mode!='user',mode!='system',mode!='iowait',mode!='irq',mode!='softirq'}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Busy Other",
@@ -1117,7 +1174,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "sum(irate(node_cpu_seconds_total{origin=\"$node\",job=\"$job\", mode=\"idle\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=\"$node\",job=\"$job\"}) by (cpu)))",
+          "expr": "sum(irate(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\", mode=\"idle\"}[$__rate_interval])) / scalar(count(count(node_cpu_seconds_total{origin=~\"$node\",job=\"$job\"}) by (cpu)))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Idle",
@@ -1127,6 +1184,112 @@
         }
       ],
       "title": "CPU Basic",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "Disk space used of all filesystems mounted",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "links": [],
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 12,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.4.0-20160616057",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "100 - ((node_filesystem_avail_bytes{origin=~\"$node\",job=\"$job\",device!~'rootfs'} * 100) / node_filesystem_size_bytes{origin=~\"$node\",job=\"$job\",device!~'rootfs'})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{mountpoint}}",
+          "range": true,
+          "refId": "A",
+          "step": 240
+        }
+      ],
+      "title": "Disk Space Used Basic",
       "type": "timeseries"
     },
     {
@@ -1164,6 +1327,7 @@
               "type": "linear"
             },
             "showPoints": "never",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1180,7 +1344,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "red",
@@ -1551,10 +1715,10 @@
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 15
+        "h": 6,
+        "w": 6,
+        "x": 18,
+        "y": 8
       },
       "id": 5,
       "options": {
@@ -1562,7 +1726,7 @@
           "calcs": [],
           "displayMode": "list",
           "placement": "bottom",
-          "showLegend": true
+          "showLegend": false
         },
         "tooltip": {
           "hideZeros": false,
@@ -1570,7 +1734,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "11.5.0-81732",
+      "pluginVersion": "12.4.0-20160616057",
       "targets": [
         {
           "datasource": {
@@ -1578,7 +1742,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_network_receive_bytes_total{origin=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+          "expr": "irate(node_network_receive_bytes_total{origin=~\"$node\",job=\"$job\"}[$__rate_interval])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "recv {{device}}",
@@ -1592,7 +1756,7 @@
             "uid": "${datasource}"
           },
           "editorMode": "code",
-          "expr": "irate(node_network_transmit_bytes_total{origin=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+          "expr": "irate(node_network_transmit_bytes_total{origin=~\"$node\",job=\"$job\"}[$__rate_interval])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "trans {{device}} ",
@@ -1607,17 +1771,20 @@
   ],
   "preload": false,
   "refresh": "10s",
-  "schemaVersion": 40,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": [
       {
         "current": {
-          "text": "neb3",
-          "value": "neb3"
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
         },
         "definition": "label_values(node_uname_info,origin)",
+        "includeAll": true,
         "label": "origin",
+        "multi": true,
         "name": "node",
         "options": [],
         "query": {
@@ -1627,6 +1794,7 @@
         },
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "sort": 1,
         "type": "query"
       },
@@ -1636,6 +1804,7 @@
           "value": "node"
         },
         "definition": "label_values(node_uname_info,job)",
+        "hide": 2,
         "label": "Job",
         "name": "job",
         "options": [],
@@ -1646,6 +1815,7 @@
         },
         "refresh": 1,
         "regex": "",
+        "regexApplyTo": "value",
         "type": "query"
       }
     ]
@@ -1658,6 +1828,6 @@
   "timezone": "browser",
   "title": "Nebulous",
   "uid": "ae9bbfoguof0gc",
-  "version": 26,
+  "version": 47,
   "weekStart": ""
 }

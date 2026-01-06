@@ -1,6 +1,7 @@
 <#
-Generic management wrapper for Ansible operations (renamed from ansible-deploy.ps1).
-Usage: .\nebctl.ps1 <command>
+Game Server Management Wrapper
+Manages Nebulous Fleet Command and Abiotic Factor dedicated servers via Ansible
+Usage: .\gameserver.ps1 <command> [options]
 #>
 
 param(
@@ -42,9 +43,12 @@ function Invoke-WSLAnsible {
 
 switch ($Command) {
     "deploy-all" {
-        Write-Host "[DEPLOY] Deploying to all servers (nds2, nds3)..." -ForegroundColor Green
+        Write-Host "[DEPLOY] Deploying to all servers (Nebulous + Abiotic Factor)..." -ForegroundColor Green
         $dryRunFlag = if ($DryRun) { "--check" } else { "" }
         Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-nebulous.yml --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+        if ($LASTEXITCODE -eq 0) {
+            Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-abiotic.yml --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+        }
     }
     
     "deploy-test" {

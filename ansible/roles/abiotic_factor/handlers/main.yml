@@ -6,3 +6,5 @@
     name: abiotic-factor
     state: restarted
     daemon_reload: yes
+  async: 600  # 10-minute timeout for SteamCMD update + Wine/server startup
+  poll: 10    # Check every 10 seconds

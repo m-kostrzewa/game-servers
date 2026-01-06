@@ -386,7 +386,7 @@ vault_prometheus_password: <encrypted_token>
 
 ---
 
-## Deployment Wrapper: `nebctl.ps1`
+## Deployment Wrapper: `gameserver.ps1`
 
 PowerShell script that bridges Windows command line to Ansible running in WSL.
 
@@ -394,35 +394,35 @@ PowerShell script that bridges Windows command line to Ansible running in WSL.
 
 ```powershell
 # List inventory and verify setup
-.\nebctl.ps1 verify
+.\gameserver.ps1 verify
 
 # Test SSH connectivity to all servers
-.\nebctl.ps1 check
+.\gameserver.ps1 check
 
 # View encrypted vault (read-only)
-.\nebctl.ps1 view-vault
+.\gameserver.ps1 view-vault
 
 # Edit encrypted vault (launches editor in WSL)
-.\nebctl.ps1 edit-vault
+.\gameserver.ps1 edit-vault
 
 
 # Deploy to all servers
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 
 # Deploy to test server only (maps to bravo)
-.\nebctl.ps1 deploy-test
+.\gameserver.ps1 deploy-test
 
 # Deploy to single server (pass alpha/bravo)
-.\nebctl.ps1 deploy-one alpha
-.\nebctl.ps1 deploy-one bravo
+.\gameserver.ps1 deploy-one alpha
+.\gameserver.ps1 deploy-one bravo
 
 # Dry-run (preview changes without applying)
-.\nebctl.ps1 deploy-all -DryRun
+.\gameserver.ps1 deploy-all -DryRun
 ```
 
 ### Implementation Details
 
-`nebctl.ps1` uses WSL to execute Ansible with vault password from `.vault_pass.txt` (gitignored file in repo root). It handles:
+`gameserver.ps1` uses WSL to execute Ansible with vault password from `.vault_pass.txt` (gitignored file in repo root). It handles:
 - Vault password file creation in WSL `/tmp/` with proper permissions
 - Ansible playbook execution with `--limit` for single-server deployments
 - Dry-run mode via `--check` and `--diff` flags
@@ -454,7 +454,7 @@ PowerShell script that bridges Windows command line to Ansible running in WSL.
 
 4. **Deploy**:
    ```powershell
-   .\nebctl.ps1 deploy-all --limit nds4
+   .\gameserver.ps1 deploy-all --limit nds4
    ```
 
 ---
@@ -470,7 +470,7 @@ nightly_restart_minute: "5"     # At 08:05 UTC
 
 Then redeploy:
 ```powershell
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 ```
 
 ---
@@ -488,7 +488,7 @@ Edit `ansible/templates/nds.conf.j2` (or per-server config files in `ansible/rol
 
 Then redeploy:
 ```powershell
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 ```
 
 ---
@@ -526,7 +526,7 @@ Import via Grafana UI: Dashboards → Import → Upload JSON file
 ### Interactive Mode (Default)
 
 ```powershell
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 # Prompts in WSL: "Vault password:"
 ```
 
@@ -541,7 +541,7 @@ Create `.vault_pass.txt` in repo root (gitignored):
 
 Then run without prompts:
 ```powershell
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 ```
 
 ### Changing Vault Password
@@ -557,7 +557,7 @@ ansible-vault rekey inventory/group_vars/nds_servers/vault.yml
 
 ### SSH Connection Issues
 ```powershell
-.\nebctl.ps1 check
+.\gameserver.ps1 check
 ```
 This tests SSH connectivity to all hosts. Check:
 - Network connectivity to server IPs
@@ -578,7 +578,7 @@ wsl -d Ubuntu -- bash -c "cd /mnt/c/.../ansible && python3 -m jinja2.cli templat
 
 ### Ansible Inventory Issues
 ```powershell
-.\nebctl.ps1 verify
+.\gameserver.ps1 verify
 ```
 Lists all servers and variables. Verify `ansible_host`, `game_port`, etc.
 

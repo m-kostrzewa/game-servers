@@ -14,14 +14,14 @@ cd ansible
 cp inventory/group_vars/nds_servers/vault.yml.template inventory/group_vars/nds_servers/vault.yml
 
 # 2. Edit vault with your secrets
-.\nebctl.ps1 edit-vault
+.\gameserver.ps1 edit-vault
 
 # 3. Deploy
-.\nebctl.ps1 deploy-all
+.\gameserver.ps1 deploy-all
 
 # Or deploy specific games
-.\nebctl.ps1 deploy-one alpha    # Nebulous server
-.\nebctl.ps1 deploy-abiotic      # Abiotic Factor server
+.\gameserver.ps1 deploy-one alpha    # Nebulous server
+.\gameserver.ps1 deploy-abiotic      # Abiotic Factor server
 ```
 
 ## Game-Specific Documentation
@@ -56,19 +56,19 @@ Create `.vault_pass.txt` in repo root (gitignored) for automated runs:
 'your-vault-password' | Out-File -Encoding UTF8 -FilePath .vault_pass.txt
 ```
 
-`nebctl.ps1` will use this automatically.
+`gameserver.ps1` will use this automatically.
 
 ## Common Tasks
 
 | Task | Command |
 |------|---------|
-| **List servers & vars** | `.\nebctl.ps1 verify` |
-| **Test SSH connectivity** | `.\nebctl.ps1 check` |
-| **Edit vault secrets** | `.\nebctl.ps1 edit-vault` |
-| **View encrypted vault** | `.\nebctl.ps1 view-vault` |
-| **Deploy all** | `.\nebctl.ps1 deploy-all` |
-| **Deploy single** | `.\nebctl.ps1 deploy-one bravo` |
-| **Dry-run (preview)** | `.\nebctl.ps1 deploy-all -DryRun` |
+| **List servers & vars** | `.\gameserver.ps1 verify` |
+| **Test SSH connectivity** | `.\gameserver.ps1 check` |
+| **Edit vault secrets** | `.\gameserver.ps1 edit-vault` |
+| **View encrypted vault** | `.\gameserver.ps1 view-vault` |
+| **Deploy all** | `.\gameserver.ps1 deploy-all` |
+| **Deploy single** | `.\gameserver.ps1 deploy-one bravo` |
+| **Dry-run (preview)** | `.\gameserver.ps1 deploy-all -DryRun` |
 
 ## Monitoring
 

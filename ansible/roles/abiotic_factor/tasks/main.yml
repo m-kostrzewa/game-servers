@@ -93,13 +93,12 @@
 
 - name: Fix steamclient.so symlink
   file:
-    src: "{{ abiotic_install_path }}/linux64/steamclient.so"
+    src: "{{ abiotic_base_path }}/steamcmd/linux64/steamclient.so"
     dest: "{{ abiotic_base_path }}/.steam/sdk64/steamclient.so"
     state: link
     owner: "{{ abiotic_user }}"
     group: "{{ abiotic_user }}"
     force: yes
-  ignore_errors: yes
 
 - name: Create runserver script
   template:

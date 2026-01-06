@@ -62,13 +62,13 @@ Set these in `ansible/inventory/group_vars/abiotic_servers/vars.yml`.
 ### Deploy Abiotic Factor to nds3
 
 ```powershell
-.\nebctl.ps1 deploy-abiotic
+.\gameserver.ps1 deploy-abiotic
 ```
 
 ### Dry-run (preview changes)
 
 ```powershell
-.\nebctl.ps1 deploy-abiotic -DryRun
+.\gameserver.ps1 deploy-abiotic -DryRun
 ```
 
 ## Network Configuration

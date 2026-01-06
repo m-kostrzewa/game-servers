@@ -1,3 +1,7 @@
+# DEPRECATED
+
+This repo was moved to https://github.com/m-kostrzewa/game-servers.
+
 # Game Server Management
 
 Ansible-based deployment system for game servers with automated updates, monitoring, and configuration management.

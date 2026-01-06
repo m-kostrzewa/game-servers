@@ -1,0 +1,29 @@
+---
+# Abiotic Factor Server Configuration Variables
+
+# Installation paths
+abiotic_user: steam
+abiotic_base_path: /srv/steam
+abiotic_install_path: /srv/steam/abiotic-factor
+abiotic_config_path: /srv/steam/abiotic-factor/AbioticFactor/Saved/Config/LinuxServer
+abiotic_saves_path: /srv/steam/abiotic-factor/AbioticFactor/Saved/SaveGames
+
+# Steam App ID for Abiotic Factor Dedicated Server
+abiotic_steam_app_id: 2857200
+
+# Server configuration
+abiotic_server_name: "Piwnica"
+abiotic_server_password: "{{ vault_abiotic_server_password }}"
+abiotic_server_motd: "Witamy w piwnicy!"
+abiotic_max_players: 6
+
+# Network configuration
+abiotic_game_port: 7778 # Different port than nebulous fleet command
+abiotic_query_port: 27017
+abiotic_max_client_rate: 100000
+abiotic_max_internet_client_rate: 100000
+
+# World save file (place in roles/abiotic_factor/files/)
+# Set this to the name of your .7z world save file
+abiotic_world_file: "piwnica2.7z"
+abiotic_world_save_name: "piwnica2"  # World name used in-game (without .7z)

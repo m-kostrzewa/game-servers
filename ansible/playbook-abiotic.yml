@@ -1,0 +1,24 @@
+---
+- name: Deploy Abiotic Factor Server
+  hosts: abiotic_servers
+  become: yes
+  gather_facts: yes
+  
+  roles:
+    - abiotic_factor
+
+  post_tasks:
+    - name: Display Abiotic Factor deployment summary
+      debug:
+        msg: |
+          ✓ Abiotic Factor deployment complete for {{ inventory_hostname }}
+          Server Name: {{ abiotic_server_name }}
+          Game Port: {{ abiotic_game_port }}
+          Query Port: {{ abiotic_query_port }}
+          Install Path: {{ abiotic_install_path }}
+          Systemd Service: abiotic-factor
+          
+          Next steps:
+          1. Verify server is running: systemctl status abiotic-factor
+          2. Check logs: journalctl -u abiotic-factor -f
+          3. Join the game server in Abiotic Factor to verify it's responding

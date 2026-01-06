@@ -5,7 +5,7 @@ Usage: .\nebctl.ps1 <command>
 
 param(
     [Parameter(Mandatory = $false, Position = 0)]
-    [ValidateSet("deploy-all", "deploy-test", "deploy-one", "verify", "check", "edit-vault", "view-vault", "update-dashboards")]
+    [ValidateSet("deploy-all", "deploy-test", "deploy-one", "deploy-abiotic", "verify", "check", "edit-vault", "view-vault", "update-dashboards")]
     [string]$Command = "deploy-all",
     
     [Parameter(Mandatory = $false, Position = 1)]
@@ -44,13 +44,13 @@ switch ($Command) {
     "deploy-all" {
         Write-Host "[DEPLOY] Deploying to all servers (nds2, nds3)..." -ForegroundColor Green
         $dryRunFlag = if ($DryRun) { "--check" } else { "" }
-        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook.yml --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-nebulous.yml --vault-password-file '$wslVaultPassFile' $dryRunFlag"
     }
     
     "deploy-test" {
         Write-Host "[TEST] Deploying to nds3 (test server only)..." -ForegroundColor Green
         $dryRunFlag = if ($DryRun) { "--check" } else { "" }
-        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook.yml --limit nds3 --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-nebulous.yml --limit nds3 --vault-password-file '$wslVaultPassFile' $dryRunFlag"
     }
     
     "deploy-one" {
@@ -65,7 +65,13 @@ switch ($Command) {
         }
         Write-Host "[DEPLOY] Deploying to $Server (limit=$limitTarget)..." -ForegroundColor Green
         $dryRunFlag = if ($DryRun) { "--check" } else { "" }
-        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook.yml --limit $limitTarget --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-nebulous.yml --limit $limitTarget --vault-password-file '$wslVaultPassFile' $dryRunFlag"
+    }
+    
+    "deploy-abiotic" {
+        Write-Host "[DEPLOY] Deploying Abiotic Factor server to nds3..." -ForegroundColor Green
+        $dryRunFlag = if ($DryRun) { "--check" } else { "" }
+        Invoke-WSLAnsible "ansible-playbook --inventory inventory/hosts.yml playbook-abiotic.yml --vault-password-file '$wslVaultPassFile' $dryRunFlag"
     }
     
     "verify" {
@@ -149,8 +155,9 @@ switch ($Command) {
         Write-Host ""
         Write-Host "Available commands:" -ForegroundColor Yellow
         Write-Host "  deploy-all     - Deploy to all servers" -ForegroundColor Yellow
-        Write-Host "  deploy-test    - Deploy to neb3 only (for testing)" -ForegroundColor Yellow
+        Write-Host "  deploy-test    - Deploy to nds3 only (for testing)" -ForegroundColor Yellow
         Write-Host "  deploy-one     - Deploy to a single server (pass server name)" -ForegroundColor Yellow
+        Write-Host "  deploy-abiotic - Deploy Abiotic Factor server to nds3" -ForegroundColor Yellow
         Write-Host "  verify         - List inventory" -ForegroundColor Yellow
         Write-Host "  check          - Test SSH connectivity" -ForegroundColor Yellow
         Write-Host "  edit-vault     - Edit encrypted vault secrets" -ForegroundColor Yellow

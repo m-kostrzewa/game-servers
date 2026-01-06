@@ -1,0 +1,26 @@
+[Unit]
+Description=Abiotic Factor Dedicated Server
+After=network.target
+
+[Service]
+Type=simple
+User={{ abiotic_user }}
+Group={{ abiotic_user }}
+WorkingDirectory={{ abiotic_install_path }}/AbioticFactor/Binaries/Win64
+
+# Auto-update before starting
+ExecStartPre={{ abiotic_base_path }}/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir {{ abiotic_install_path }} +login anonymous +app_update {{ abiotic_steam_app_id }} +quit
+
+# Run the server via Wine with Xvfb
+ExecStart={{ abiotic_install_path }}/AbioticFactor/Binaries/Win64/runserver.sh
+
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=abiotic-factor
+
+[Install]
+WantedBy=multi-user.target

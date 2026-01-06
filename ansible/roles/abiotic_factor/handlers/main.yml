@@ -1,0 +1,8 @@
+---
+# Handlers for Abiotic Factor server
+
+- name: restart abiotic service
+  systemd:
+    name: abiotic-factor
+    state: restarted
+    daemon_reload: yes

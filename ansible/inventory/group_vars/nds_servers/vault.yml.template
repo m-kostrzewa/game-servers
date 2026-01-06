@@ -3,8 +3,12 @@
 # This file should be encrypted with: ansible-vault encrypt inventory/group_vars/nds_servers/vault.yml
 # Edit with: ansible-vault edit inventory/group_vars/nds_servers/vault.yml
 
+# Nebulous Fleet Command
 vault_server_admin_password: "your_nds_server_password"
 vault_admin_steam_id: "your_steam_id"
+
+# Abiotic Factor
+vault_abiotic_server_password: "your_abiotic_password"
 
 # Grafana Cloud - Promtail (Loki) endpoint
 vault_promtail_url: "https://YOUR_USER_ID:YOUR_GRAFANA_TOKEN@logs-prod-025.grafana.net/api/prom/push"

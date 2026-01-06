@@ -1,0 +1,27 @@
+[/Script/AbioticFactor.AFGameSession]
+ServerName={{ abiotic_server_name | default("Abiotic Factor Dedicated Server") }}
+ServerPassword={{ abiotic_server_password | default("") }}
+MaxPlayers={{ abiotic_max_players | default("6") }}
+bUsePassword={{ 'true' if abiotic_server_password else 'false' }}
+ServerMOTD={{ abiotic_server_motd | default("Welcome to the server!") }}
+
+[/Script/Engine.GameSession]
+MaxPlayers={{ abiotic_max_players | default("6") }}
+
+[/Script/OnlineSubsystemUtils.IpNetDriver]
+MaxClientRate={{ abiotic_max_client_rate | default("100000") }}
+MaxInternetClientRate={{ abiotic_max_internet_client_rate | default("100000") }}
+
+[URL]
+Port={{ abiotic_game_port }}
+
+[OnlineSubsystem]
+DefaultPlatformService=NULL
+
+[OnlineSubsystemSteam]
+bEnabled=true
+SteamDevAppId=2857140
+
+[/Script/Engine.Engine]
+bSmoothFrameRate=true
+bUseFixedFrameRate=false

@@ -1,53 +1,29 @@
-# Nebulous Fleet Command Server Management
+# Game Server Management
 
-Ansible-based deployment system for multi-server N:FC game server orchestration with automated updates, restarts, monitoring (Prometheus/Grafana), and log aggregation (Promtail/Loki).
-
-**Status**: Operational | **Servers**: 2 (alpha: EU-1, bravo: EU-2) | **Monitoring**: Grafana Cloud
+Ansible-based deployment system for game servers with automated updates, monitoring, and configuration management.
 
 ## Quick Start
-
-### Prerequisites
-- **Windows**: PowerShell 5.1+
-- **WSL2**: Ubuntu distribution with Ansible 2.16+
-- **Remote servers**: Ubuntu 24.04 with Docker and **N:FC server installed via [VoodooFan's script](https://github.com/VoodooFan/nebulous/blob/main/install-steam-and-nds.bash)**
-- **Monitoring**: Free-tier [Grafana Cloud](https://grafana.com/products/cloud/) account (optional)
-
-### Initial Setup
 
 ```powershell
 # 1. Copy vault template
 cd ansible
 cp inventory/group_vars/nds_servers/vault.yml.template inventory/group_vars/nds_servers/vault.yml
 
-# 2. Edit vault with your secrets (admin password, admin steam id, Grafana endpoints)
+# 2. Edit vault with your secrets
 .\nebctl.ps1 edit-vault
 
-# 3. Verify setup
-.\nebctl.ps1 verify
-
-# 4. Test on safe target (dry-run)
-.\nebctl.ps1 deploy-test -DryRun
-```
-
-### Deploy
-
-```powershell
-# All servers
+# 3. Deploy
 .\nebctl.ps1 deploy-all
 
-# Single server (safe for updates)
-.\nebctl.ps1 deploy-one alpha
-
-# Dry-run (preview only, no changes)
-.\nebctl.ps1 deploy-all -DryRun
+# Or deploy specific games
+.\nebctl.ps1 deploy-one alpha    # Nebulous server
+.\nebctl.ps1 deploy-abiotic      # Abiotic Factor server
 ```
 
-## Key Features
+## Game-Specific Documentation
 
-- **Encrypted secrets**: Ansible Vault (`vault.yml` - encrypted at rest)
-- **Flexible inventory**: YAML-based, easy to add/modify servers
-- **Jinja2 templates**: Dynamic config generation (nds.conf, prometheus.yml, config.yaml, crontab)
-- **Graceful restarts**: ServerCommand.xml protocol (no mid-match disruptions)
+- **Nebulous Fleet Command**: See `ansible/roles/nds_server/README.md`
+- **Abiotic Factor**: See `ansible/roles/abiotic_factor/README.md`
 - **Automated checks**: Hourly update check, daily 08:05 UTC restart (cron)
 - **Full monitoring**: Prometheus metrics + Promtail logs → Grafana Cloud
 - **Multi-server**: Deploy to specific servers with `--limit` flag
@@ -55,30 +31,16 @@ cp inventory/group_vars/nds_servers/vault.yml.template inventory/group_vars/nds_
 ## Repository Structure
 
 ```
-.
-├── nebctl.ps1                      # PowerShell deployment wrapper
-├── ansible/
-│   ├── playbook.yml                # Main orchestration
-│   ├── inventory/hosts.yml         # Server inventory + per-host vars
-│   ├── inventory/group_vars/nds_servers/
-│   │   ├── vars.yml                # Shared variables (ports, paths)
-│   │   ├── vault.yml               # Encrypted secrets (edit with: .\nebctl.ps1 edit-vault)
-│   │   └── vault.yml.template      # Template (rename to vault.yml and fill in)
-│   ├── roles/
-│   │   ├── nds_server/             # Game server deployment
-│   │   ├── system_config/          # Cron, sudoers, permissions
-│   │   └── monitoring/             # Prometheus, Promtail, Node Exporter
-│   ├── templates/
-│   │   ├── nds.conf.j2             # Server config (XML)
-│   │   ├── prometheus.yml.j2       # Metrics collection
-│   │   ├── config.yaml.j2          # Log aggregation
-│   │   └── crontab.j2              # Scheduled tasks
-│   └── README.md                   # Full Ansible documentation
-├── grafana/
-│   ├── Nebulous-*.json             # Pre-built dashboards
-│   └── Maps played-*.json          # Game statistics dashboard
-└── .github/
-    └── copilot-instructions.md     # Comprehensive project guide for AI
+ansible/
+├── playbook-nebulous.yml       # Nebulous deployment
+├── playbook-abiotic.yml        # Abiotic Factor deployment
+├── inventory/hosts.yml         # Server inventory
+├── inventory/group_vars/       # Variables and vault
+└── roles/
+    ├── nds_server/             # Nebulous server
+    ├── abiotic_factor/         # Abiotic Factor server
+    ├── system_config/          # Cron, sudoers
+    └── monitoring/             # Prometheus, Promtail
 ```
 
 ## Vault Password (Non-Interactive)

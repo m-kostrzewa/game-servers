@@ -1,0 +1,179 @@
+---
+# Abiotic Factor Server Installation and Configuration Role
+# Based on: https://github.com/DFJacob/AbioticFactorDedicatedServer/wiki/Guide-%E2%80%90-Quickstart
+# Linux guide: https://github.com/DFJacob/AbioticFactorDedicatedServer/issues/3#issuecomment-2094369127
+
+- name: Install dependencies for Abiotic Factor server
+  apt:
+    name:
+      - lib32gcc-s1
+      - xvfb
+      - p7zip-full
+      - winehq-stable
+      - cabextract
+      - winbind
+    state: present
+    update_cache: yes
+
+- name: Enable i386 architecture
+  shell: dpkg --add-architecture i386
+  register: i386_result
+  changed_when: "'already enabled' not in i386_result.stdout"
+
+- name: Ensure steam user exists
+  user:
+    name: "{{ abiotic_user }}"
+    shell: /bin/bash
+    home: "{{ abiotic_base_path }}"
+    create_home: yes
+    state: present
+
+- name: Create Abiotic Factor directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    mode: '0755'
+  loop:
+    - "{{ abiotic_install_path }}"
+    - "{{ abiotic_saves_path }}"
+    - "{{ abiotic_base_path }}/.steam/sdk64"
+
+- name: Check if SteamCMD is installed
+  stat:
+    path: "{{ abiotic_base_path }}/steamcmd/steamcmd.sh"
+  register: steamcmd_check
+
+- name: Download SteamCMD
+  get_url:
+    url: https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
+    dest: "{{ abiotic_base_path }}/steamcmd_linux.tar.gz"
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+  when: not steamcmd_check.stat.exists
+
+- name: Create SteamCMD directory
+  file:
+    path: "{{ abiotic_base_path }}/steamcmd"
+    state: directory
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    mode: '0755'
+  when: not steamcmd_check.stat.exists
+
+- name: Extract SteamCMD
+  unarchive:
+    src: "{{ abiotic_base_path }}/steamcmd_linux.tar.gz"
+    dest: "{{ abiotic_base_path }}/steamcmd"
+    remote_src: yes
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+  when: not steamcmd_check.stat.exists
+
+- name: Clean up SteamCMD tarball
+  file:
+    path: "{{ abiotic_base_path }}/steamcmd_linux.tar.gz"
+    state: absent
+  when: not steamcmd_check.stat.exists
+
+- name: Check if Abiotic Factor server is installed
+  stat:
+    path: "{{ abiotic_install_path }}/AbioticFactorServer.sh"
+  register: abiotic_installed
+
+- name: Install/Update Abiotic Factor server via SteamCMD
+  become_user: "{{ abiotic_user }}"
+  shell: |
+    {{ abiotic_base_path }}/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +force_install_dir {{ abiotic_install_path }} +login anonymous +app_update {{ abiotic_steam_app_id }} validate +quit
+  args:
+    executable: /bin/bash
+  register: steamcmd_install
+  changed_when: "'Success! App' in steamcmd_install.stdout"
+
+- name: Fix steamclient.so symlink
+  file:
+    src: "{{ abiotic_install_path }}/linux64/steamclient.so"
+    dest: "{{ abiotic_base_path }}/.steam/sdk64/steamclient.so"
+    state: link
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    force: yes
+  ignore_errors: yes
+
+- name: Create runserver script
+  template:
+    src: runserver.sh.j2
+    dest: "{{ abiotic_install_path }}/AbioticFactor/Binaries/Win64/runserver.sh"
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    mode: '0755'
+
+- name: Check if world save file exists on server
+  stat:
+    path: "{{ abiotic_saves_path }}/{{ abiotic_world_file }}"
+  register: world_save_check
+  when: abiotic_world_file != ""
+
+- name: Deploy world save file (only if not exists)
+  copy:
+    src: "{{ abiotic_world_file }}"
+    dest: "{{ abiotic_saves_path }}/{{ abiotic_world_file }}"
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    mode: '0644'
+  when: abiotic_world_file != "" and not world_save_check.stat.exists
+
+- name: Create Server/Worlds directory for saves
+  file:
+    path: "{{ abiotic_saves_path }}/Server/Worlds"
+    state: directory
+    owner: "{{ abiotic_user }}"
+    group: "{{ abiotic_user }}"
+    mode: '0755'
+  when: abiotic_world_file != ""
+
+- name: Extract world save file to Server/Worlds directory
+  become_user: "{{ abiotic_user }}"
+  shell: |
+    cd "{{ abiotic_saves_path }}"
+    7z x -y "{{ abiotic_world_file }}" -o"Server/Worlds/"
+  args:
+    executable: /bin/bash
+  when: abiotic_world_file != "" and not world_save_check.stat.exists and abiotic_world_file.endswith('.7z')
+
+- name: Deploy systemd service
+  template:
+    src: abiotic-factor.service.j2
+    dest: /etc/systemd/system/abiotic-factor.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart abiotic service
+
+- name: Create daily restart cron job
+  cron:
+    name: "Abiotic Factor daily restart"
+    user: root
+    hour: 6
+    minute: 0
+    job: "systemctl restart abiotic-factor"
+    state: present
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start Abiotic Factor service
+  systemd:
+    name: abiotic-factor
+    enabled: yes
+    state: started
+
+- name: Display Abiotic Factor deployment summary
+  debug:
+    msg: |
+      ✓ Abiotic Factor server deployed to {{ inventory_hostname }}
+      Server: {{ abiotic_server_name }}
+      Ports: {{ abiotic_game_port }}/{{ abiotic_query_port }}
+      Path: {{ abiotic_install_path }}
